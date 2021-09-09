@@ -1,0 +1,3 @@
+DBFILENAME = "ledstate.db"
+LEDPIN = 13
+BUTTONPIN = 11
