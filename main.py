@@ -34,21 +34,19 @@ class Led:
     def set_state(self, on: bool):
         self.is_on = on
         GPIO.output(self.pin, self.is_on)
-        
+
 
 class Main:
     Button: Button
     Led: Led
     DB_Connection: sqlite.Connection
     DB_Cursor: sqlite.Cursor
-    toggle_state: bool
     
     def __init__(self, button_pin: int, led_pin: int, db_filename: str):
         self.Button = Button(button_pin)
         self.Led = Led(led_pin)
         self.DB_Connection = sqlite.Connection(db_filename)
         self.DB_Cursor = self.DB_Connection.cursor()
-        self.toggle_state = False
         
     def run(self):
         try:
@@ -63,14 +61,12 @@ class Main:
                 if(elapsed_time > 1):
                     continue
 
-                self.toggle_state = not self.toggle_state
                 datetime_string = str(datetime.now())[:-3]
-                print(datetime_string + ", " + str(self.toggle_state))
 
-                self.Led.set_state(self.toggle_state)
+                self.Led.set_state(not self.Led.is_on)
                 self.DB_Cursor.execute("""
                     INSERT INTO ledstate (is_on, time_changed) VALUES(:is_on, :time_changed)
-                """, {"is_on": self.toggle_state, "time_changed": datetime_string})
+                """, {"is_on": self.Led.is_on, "time_changed": datetime_string})
 
         except KeyboardInterrupt:
             GPIO.cleanup()
