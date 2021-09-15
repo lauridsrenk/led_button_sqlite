@@ -2,11 +2,12 @@ import sqlite3
 
 con = sqlite3.connect("ledstate.db")
 cur = con.cursor()
-cur.execute("""
+cur.executescript("""
+    DROP TABLE IF EXISTS ledstate;
     create table ledstate(
         ledstate_id     INTEGER PRIMARY KEY AUTOINCREMENT,
         is_on           INT NOT NULL,
-        time_changed    REAL NOT NULL
+        time_changed    TEXT NOT NULL
     );
     """)
 con.commit()
